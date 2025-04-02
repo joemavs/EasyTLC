@@ -1,5 +1,6 @@
 import tkinter as tk
 from welcome_screen import WelcomeScreen
+from main_screen import MainScreen
 class MainApp:
     def __init__(self):
         # Create the main application window
@@ -17,7 +18,9 @@ class MainApp:
 
     def on_welcome_done(self, image):
         # Code to transition to the next screen
-        self.
+        for widget in self.root.winfo_children():
+            widget.destroy()
+        self.main_screen = MainScreen(self.root, image)
 
 
 if __name__ == "__main__":
