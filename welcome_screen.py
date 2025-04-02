@@ -25,9 +25,11 @@ class WelcomeScreen:
                                               filetypes=(("All Files", "*.*"),))
         try:
             image = Image.open(filename)
+            print("opened")
+            print(image)
             self.on_start_callback(image)
-        except:
-            print("This file could not be opened")
+        except OSError:
+            print("The file is not a valid image or cannot be opened as an image.")
 
 
 
