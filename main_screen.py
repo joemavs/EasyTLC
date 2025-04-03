@@ -1,5 +1,11 @@
 import tkinter as tk
-from PIL import ImageTk
+
+import cv2
+import numpy as np
+from PIL import ImageTk, Image
+from skimage.measure import label, regionprops
+from skimage.color import label2rgb
+
 
 class MainScreen:
 
@@ -38,14 +44,9 @@ class MainScreen:
         image_width = self.image_tk.width()
         image_height = self.image_tk.height()
 
-        # Calculate the top-left corner coordinates for centering the image
-        x = (canvas_width - image_width) // 2
-        y = (canvas_height - image_height) // 2
-        print(x)
-        print(y)
 
         # Create the image on the canvas at the calculated coordinates
-        self.canvas.create_image(0, 0, anchor=tk.NW, image=self.image_tk)
+        self.rgb_image = self.canvas.create_image(0, 0, anchor=tk.NW, image=self.image_tk)
 
         self.master.update()
         # Get current window width and height
@@ -73,10 +74,11 @@ class MainScreen:
         self.show_line(event.y)
 
         if line == "solvent front":
-            self.y_solvent_front = event.y
+            self.solvent_front_y = event.y
             self.wait_for_bl_click()
         elif line == "baseline":
-            self.baseline = event.y
+            self.baseline_y = event.y
+            self.spot_detection()
 
 
 
@@ -84,6 +86,67 @@ class MainScreen:
     def show_line(self, y_coord):
         print(y_coord)
         self.canvas.create_line(0, y_coord, self.win_width, y_coord)
+
+    def spot_detection(self):
+        self.label.config(text="")
+        hsv_image = self.image.convert("HSV")
+
+        # Convert to a numpy array
+        hsv_array = np.array(hsv_image)
+        mask_bool = self.threshold_yellow(hsv_array)
+        labeled_image = label(mask_bool)
+
+        # Extract region properties
+        props = regionprops(labeled_image)
+
+        # Create list of centroids y vals
+        centroid_y = []
+        print(f"Number of detected blobs: {len(props)}")
+        for i, prop in enumerate(props, start=1):
+            print(f"Blob {i}: Area={prop.area}, Centroid={prop.centroid}")
+            centroid_y.append(prop.centroid[0])
+
+        for y_val in centroid_y:
+            rf_value = self.calculate_rf(y_val)
+            if 0.35 < rf_value < 0.66:
+                print("detected")
+
+
+        binary_array = (mask_bool.astype(np.uint8)) * 255
+        binary_pil = Image.fromarray(binary_array, mode="L")
+        self.mask_photo = ImageTk.PhotoImage(binary_pil)
+
+        self.canvas.itemconfig(self.rgb_image, image=self.mask_photo)
+
+    def threshold_yellow(self, hsv_array):
+        """
+        Binarizes an image to detect yellow regions based on HSV thresholds.
+        Pixels within the defined range for yellow are set to 1 (white), others to 0 (black).
+
+        Returns a binary image highlighting yellow regions.
+        """
+
+        # Define threshold ranges - Need UV light to edit this and perfect as it changes
+        lower_bound = np.array([0, 50, 50])
+        upper_bound = np.array([30, 255, 255])
+
+        # Threshold the HSV image using cv2.inRange
+        mask = cv2.inRange(hsv_array, lower_bound, upper_bound)
+
+        # Convert the cleaned mask to a boolean array (True where yellow is detected)
+        mask_bool = mask > 0
+        return mask_bool
+
+    def calculate_rf(self,centroid_y):
+        rf = (self.baseline_y - centroid_y) / (self.baseline_y - self.solvent_front_y)
+        return rf
+
+
+
+
+
+
+
 
 
 
