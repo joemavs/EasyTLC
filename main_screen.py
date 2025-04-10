@@ -5,6 +5,7 @@ from PIL import ImageTk, Image
 from skimage.measure import label, regionprops
 from skimage.color import label2rgb
 
+
 class MainScreen:
     def __init__(self, master, image):
         self.master = master  # 'master' is the main window (root)
@@ -90,8 +91,18 @@ class MainScreen:
             # Update the canvas image with the new cropped image
             self.canvas.itemconfig(self.rgb_image, image=self.cropped_image)
 
+            # Calculate the new center position
+            canvas_center_x = self.canvas_width // 2
+            canvas_center_y = self.canvas_height // 2
+            cropped_img_width = self.cropped_image.width()
+            cropped_img_height = self.cropped_image.height()
 
+            self.canvas.config(width=cropped_img_width, height=cropped_img_height)
 
+            # Resize the main window to fit the new canvas size
+            new_win_width = cropped_img_width + 20  # add padding
+            new_win_height = cropped_img_height + 20
+            self.master.geometry(f"{self.master.winfo_width()}x{new_win_height}");
             self.wait_for_sf_click()
 
     def wait_for_sf_click(self):
@@ -147,6 +158,7 @@ class MainScreen:
             if 0.35 < rf_value < 0.6:
                 print("detected")
                 j = j+1
+
             else:
                 labeled_image[labeled_image == regionprops(labeled_image)[j].label] = 0
 
@@ -180,5 +192,3 @@ class MainScreen:
     def calculate_rf(self, centroid_y):
         rf = (self.baseline_y - centroid_y) / (self.baseline_y - self.solvent_front_y)
         return rf
-
-
