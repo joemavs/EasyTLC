@@ -4,6 +4,7 @@ import numpy as np
 from PIL import ImageTk, Image
 from skimage.measure import label, regionprops
 from skimage.color import label2rgb
+from tkinter import messagebox
 
 
 class MainScreen:
@@ -178,6 +179,9 @@ class MainScreen:
 
         # Update the canvas image to show the labelled components overlay
         self.canvas.itemconfig(self.rgb_image, image=self.labelled_photo)
+
+        messagebox.showwarning("Detection Warning",
+                               "WARNING: DO NOT CONSUME OR SELL THIS PRODUCT.\n\nA spot was detected within the target range. This may indicate the presence of Ethylene Glycol (EG) or Diethylene Glycol (DEG). Please consult appropriate health or regulatory authorities.")
 
     def threshold_yellow(self, hsv_array):
         """
