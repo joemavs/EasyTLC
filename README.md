@@ -1,8 +1,8 @@
 # EasyTLC
 
-EasyTLC is a Python-based image-processing application for analysing **thin-layer chromatography (TLC) plates**. It allows users to upload an image of a TLC plate, identify the plate boundaries, solvent front and baseline, and automatically calculate the retention factor ($R_f$) of detected spots.
+EasyTLC is a Python-based image-processing application for analysing thin-layer chromatography (TLC) plates. It allows users to upload an image of a TLC plate, identify the plate boundaries, solvent front and baseline, and automatically calculate the retention factor ($R_f$) of detected spots.
 
-The project was developed as part of a biomedical engineering design project investigating a low-cost method for screening cough syrup samples for potential **ethylene glycol (EG) and diethylene glycol (DEG) contamination**.
+The project was developed as part of a biomedical engineering design project investigating a low-cost method for screening cough syrup samples for potential ethylene glycol (EG) and diethylene glycol (DEG) contamination.
 
 ## Features
 
@@ -38,7 +38,7 @@ This range was selected during project testing as a favourable range for identif
 
 Receiver operating characteristic (ROC) analysis gave the EasyTLC algorithm an **AUC of 0.928**, demonstrating strong discrimination between the tested TLC plates with and without EG.
 
-However, the algorithm is **not intended to provide definitive confirmation of contamination**. False positives occurred when other TLC spots fell within the target $R_f$ range, and direct testing with DEG was not performed.
+However, the algorithm is not intended to provide definitive confirmation of contamination. False positives occurred when other TLC spots fell within the target $R_f$ range, and direct testing with DEG was not performed.
 
 Potential future improvements include:
 
